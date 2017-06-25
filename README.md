@@ -117,7 +117,7 @@ Instead of using environment variables, those variables should be persisted into
 
 - Cross compilation
 - It doesn't support a separate build directory
-
+- A target can only be one file. Some people mentioned this, but this might not be a valid problem restriction.
 
 ## Unanswered Questions
 
@@ -127,5 +127,6 @@ Instead of using environment variables, those variables should be persisted into
 
 - Nils Dagsson Moskopp - http://news.dieweltistgarnichtso.net/bin/redo-sh.html - Nice survey of implementations
 - Alan Grosskurth Thesis - http://grosskurth.ca/papers/mmath-thesis.pdf
+- Alan Grosskurth bash version - https://github.com/mattwidmann/redo-grosskurth
 - Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
 
