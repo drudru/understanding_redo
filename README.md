@@ -113,6 +113,8 @@ Instead of using environment variables, those variables should be persisted into
 
 ## Problems with the Redo model
 
+- In the Grosskurth, model, if a file exists on first build (even an empty one), it will be considered a source. This is a pretty serious flaw.
+
 - Cross compilation
 - It doesn't support a separate build directory
 
