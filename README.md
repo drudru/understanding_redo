@@ -34,12 +34,18 @@ Some redo systems will run a default 'all.do' file if a target is not specified 
 `redo` [<targets|sources>...]
 
 redo-ifchange gets a list of what most implementations call dependencies.
+
 The command has no options or other arguments.
+
 The command will record each dependency for the 'do' script that is running the redo-ifchange command.
-If the dependency was marked 'uptodate', the command processes the next item.
+
+If the dependency has an 'uptodate' attribute, regardless of its value (yes or no), the command processes the next item.
+
 If the dependent file exists on first build, then it is considered a source. If not, it is considered a target.
 
-If the file is a source, its MD5 is compared with a prior run.
+If the file is a source, its MD5 is compared with a prior run. If the MD5 matches, 'uptodate' is set to 'yes', else 'no'.
+
+
 
 ### redo-ifcreate
 `redo` [<targets|sources>...]
@@ -48,8 +54,16 @@ The redo-ifcreate command
 
 ## First Build
 
-The user will run 'redo' on a target. With the assumption that none of the targets are built,
-all of the 'do' scripts will be run.
+For the first build, the user will run 'redo' on a target.
+With the assumption that none of the targets are built, all of the 'do' scripts will be run.
+As they are run, any additional dependency information will be generated.
+
+## Observations
+
+The developer must specify the dependencies up to a certain point. Past that, it is expected that the utilities will determine and generate additional dependencies. For example, a c compiler should emit header dependencies. At the same time, if a library changed, it 
+would not be caught by this process.
+
+Instead of using environment variables, those variables should be persisted into files.
 
 
 ## Problems with the Redo model
