@@ -73,13 +73,21 @@ If the dependency is a target, the following processing is performed:
     - it is run as 'redo-ifchange $default.do'
     - it is run as 'redo-ifcreate $dependency.do'
   - If no 'do' file exists, then an error is emitted and the process exits.
+  
+- Then the selected 'do' file is run for this dependency
+- If the run was successful, it is compared with the old md5
+  - If the result is the same, then this dependency is marked uptodate=y
+  - Regardless, the new MD5 is recorded
+- Once all this is done, the new prereqs that were built in the process of executing this do,
+  are set into place for this dependency
 
 - In the end, the 'prereqs.build' replaces the 'prereqs'
+- the 'uptodate' is then recorded for this target.
 
 ### redo-ifcreate
 `redo` [<targets|sources>...]
 
-The redo-ifcreate command 
+The redo-ifcreate command needs to be described.
 
 ## First Build
 
@@ -100,7 +108,7 @@ Until I understand the rules of this system, it feels too loose to me.
 The developer must specify the dependencies up to a certain point. Past that, it is expected that the utilities will determine and generate additional dependencies. For example, a c compiler should emit header dependencies. At the same time, if a library changed, it 
 would not be caught by this process.
 
-Instead of using environment variables, those variables should be persisted into files.
+Instead of using environment variables, those variables should be persisted into files. When this is done, an MD5 can be stored for this file to determine if it is up to date.
 
 
 ## Problems with the Redo model
