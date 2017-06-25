@@ -8,7 +8,7 @@ A document that concisely describes the Redo build system
 
 "But aren't there already many descriptions?"
 
-Yes, there are. Unfortunately, they tend to immediately go into examples and then gloss over or not even cover some functionality.
+Yes, there are. Unfortunately, they tend to immediately go into examples and then gloss over or not even cover some functionality. This is my analysis of the Alan Grosskurth bash scripts.
 
 ## The Core of Redo
 
@@ -43,9 +43,36 @@ If the dependency has an 'uptodate' attribute, regardless of its value (yes or n
 
 If the dependent file exists on first build, then it is considered a source. If not, it is considered a target.
 
-If the file is a source, its MD5 is compared with a prior run. If the MD5 matches, 'uptodate' is set to 'yes', else 'no'.
+If the dependency is a source, its MD5 is compared with a prior run. If the MD5 matches, 'uptodate' is set to 'yes', else 'no'.
 
+If the dependency is a target, the following processing is performed:
 
+- Essentially, all the dependency's pre-reqs are checked to see if they are up to date. If not, then redo-ifchange is run on each of those dependencies. If the redo-ifchange runs and everything goes great, it is possible for the system to be 'uptodate'
+
+- Each dependency's 'prereq' is checked.
+- If the file is not there, then this dependency is not up to date.
+- If the file is there, then each line in it is checked for an 'uptodate' attribute. If it does not have that attribute,
+  then 'redo-ifchange' is run on that dependency.
+- If the result of the prior command was an error, then an error is emitted and the process exits. Since all commands are redo-ifchange, this will exit the recursive calls.
+- For some reason, the 'uptodate' attribute is set to 'no' as a result (some source had an MD5 that did not match)
+
+- If we are not up to date, then either several things happened:
+-- This is a new dependency and the prereqs didn't exist
+-- The redo-ifchange was run on a source, and it was not up to date
+-- The redo-ifchange was run on a target, and it was not up to date
+
+- If the status was 'uptodate', that means:
+-- Every prereq that was a source had no change to their MD5.
+
+- Then the 'prereqs' are removed for this dependency.
+- A 'do' file is checked for with the name '$dependency.do', if that file exists, it is run as 'redo-ifchange $dependency.do'
+-- Note: this records the do file as a dependency.
+- Otherwise, a 'default.do' is checked for. If it exists, 
+-- it is run as 'redo-ifchange $default.do'
+-- it is run as 'redo-ifcreate $dependency.do'
+- If no 'do' file exists, then an error is emitted and the process exits.
+
+- In the end, the 'prereqs.build' replaces the 'prereqs'
 
 ### redo-ifcreate
 `redo` [<targets|sources>...]
@@ -56,7 +83,15 @@ The redo-ifcreate command
 
 For the first build, the user will run 'redo' on a target.
 With the assumption that none of the targets are built, all of the 'do' scripts will be run.
-As they are run, any additional dependency information will be generated.
+As they are run, every file mentioned to redo is marked as a source or target.
+Also, any additional dependency information will be generated.
+
+This is a bit different than 'make'. In 'make', the sources, targets, and dependencies are always fully specified in the Makefile.
+When 'make' runs, it just checks the leaves to see if any of the targets dependent on them need to run their actions.
+
+In Redo, the scripts have to run once in order to build the dependency list **and** to mark the sources and targets.
+Until I understand the rules of this system, it feels too loose to me.
+
 
 ## Observations
 
@@ -70,6 +105,7 @@ Instead of using environment variables, those variables should be persisted into
 
 - Cross compilation
 - It doesn't support a separate build directory
+
 
 ## Unanswered Questions
 
