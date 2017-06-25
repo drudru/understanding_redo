@@ -63,6 +63,7 @@ all of the 'do' scripts will be run.
 
 ## Links to Sites Describing Redo
 
-Alan Grosskurth Thesis - http://grosskurth.ca/papers/mmath-thesis.pdf
-Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
+- Nils Dagsson Moskopp - http://news.dieweltistgarnichtso.net/bin/redo-sh.html - Nice survey of implementations
+- Alan Grosskurth Thesis - http://grosskurth.ca/papers/mmath-thesis.pdf
+- Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
 
