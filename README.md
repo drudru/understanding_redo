@@ -110,6 +110,13 @@ would not be caught by this process.
 
 Instead of using environment variables, those variables should be persisted into files. When this is done, an MD5 can be stored for this file to determine if it is up to date.
 
+## The High Level
+
+- first run marks targets and sources
+- dependencies are used on all further runs.
+- Essentially only the source dependencies are checked against their checksum.
+- If any of those change, that causes the targets to actually run a 'do' file.
+
 
 ## Problems with the Redo model
 
