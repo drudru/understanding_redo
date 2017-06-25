@@ -65,12 +65,14 @@ If the dependency is a target, the following processing is performed:
 -- Every prereq that was a source had no change to their MD5.
 
 - Then the 'prereqs' are removed for this dependency.
-- A 'do' file is checked for with the name '$dependency.do', if that file exists, it is run as 'redo-ifchange $dependency.do'
--- Note: this records the do file as a dependency.
-- Otherwise, a 'default.do' is checked for. If it exists, 
--- it is run as 'redo-ifchange $default.do'
--- it is run as 'redo-ifcreate $dependency.do'
-- If no 'do' file exists, then an error is emitted and the process exits.
+
+- Then a 'do' file is selected, and it is marked as a dependency for this dependency.
+-- A 'do' file is checked for with the name '$dependency.do', if that file exists, it is run as 'redo-ifchange $dependency.do'
+--- Note: this records the do file as a dependency.
+-- Otherwise, a 'default.do' is checked for. If it exists, 
+--- it is run as 'redo-ifchange $default.do'
+--- it is run as 'redo-ifcreate $dependency.do'
+-- If no 'do' file exists, then an error is emitted and the process exits.
 
 - In the end, the 'prereqs.build' replaces the 'prereqs'
 
