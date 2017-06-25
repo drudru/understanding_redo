@@ -57,22 +57,22 @@ If the dependency is a target, the following processing is performed:
 - For some reason, the 'uptodate' attribute is set to 'no' as a result (some source had an MD5 that did not match)
 
 - If we are not up to date, then either several things happened:
--- This is a new dependency and the prereqs didn't exist
--- The redo-ifchange was run on a source, and it was not up to date
--- The redo-ifchange was run on a target, and it was not up to date
+  - This is a new dependency and the prereqs didn't exist
+  - The redo-ifchange was run on a source, and it was not up to date
+  - The redo-ifchange was run on a target, and it was not up to date
 
 - If the status was 'uptodate', that means:
--- Every prereq that was a source had no change to their MD5.
+  - Every prereq that was a source had no change to their MD5.
 
 - Then the 'prereqs' are removed for this dependency.
 
 - Then a 'do' file is selected, and it is marked as a dependency for this dependency.
--- A 'do' file is checked for with the name '$dependency.do', if that file exists, it is run as 'redo-ifchange $dependency.do'
---- Note: this records the do file as a dependency.
--- Otherwise, a 'default.do' is checked for. If it exists, 
---- it is run as 'redo-ifchange $default.do'
---- it is run as 'redo-ifcreate $dependency.do'
--- If no 'do' file exists, then an error is emitted and the process exits.
+  - A 'do' file is checked for with the name '$dependency.do', if that file exists, it is run as 'redo-ifchange $dependency.do'
+    - Note: this records the do file as a dependency.
+  - Otherwise, a 'default.do' is checked for. If it exists, 
+    - it is run as 'redo-ifchange $default.do'
+    - it is run as 'redo-ifcreate $dependency.do'
+  - If no 'do' file exists, then an error is emitted and the process exits.
 
 - In the end, the 'prereqs.build' replaces the 'prereqs'
 
