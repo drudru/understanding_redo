@@ -136,4 +136,5 @@ Instead of using environment variables, those variables should be persisted into
 - Alan Grosskurth Thesis - http://grosskurth.ca/papers/mmath-thesis.pdf
 - Alan Grosskurth bash version - https://github.com/mattwidmann/redo-grosskurth
 - Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
+- Sean Bowman on Redo - http://seanbowman.me/blog/tags/redo/
 
