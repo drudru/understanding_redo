@@ -133,6 +133,7 @@ Instead of using environment variables, those variables should be persisted into
 ## Links to Sites Describing Redo
 
 - Nils Dagsson Moskopp - http://news.dieweltistgarnichtso.net/bin/redo-sh.html - Nice survey of implementations
+- Apenwarr Version in Python - https://github.com/apenwarr/redo
 - Alan Grosskurth Thesis - http://grosskurth.ca/papers/mmath-thesis.pdf
 - Alan Grosskurth bash version - https://github.com/mattwidmann/redo-grosskurth
 - Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
