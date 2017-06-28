@@ -10,7 +10,7 @@ A document that concisely describes the Redo build system
 
 Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings.
 
-This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation.
+This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simmple.
 
 ## In Contrast to Make
 
@@ -27,10 +27,150 @@ First, the 'make' documentation is not explicit about the following: everybody u
 If you run into a situation where one of the prerequsits of a prerequisit changes, then 'make' will not detect this. For most tasks, this
 is ok. (More on this)
 
-Most C or C++ projects end up getting the compiler to generate a list of dependencies for any *.c, *.cpp that is compiled. Those dependencies may not be in a format that is compatible with make.
+Most C or C++ projects end up getting the compiler to generate a list of dependencies for any *.c, *.cpp that is compiled. Those dependencies may not be in a format that is compatible with make. Also, what if your make is running in parallel? Orchestrating dependency files in an environment like that is tricky.
 
 Second, as you integrate other libraries or code-bases into your project's build, you will want to just utilize that other projects 'makefile'. However, there are many conventions for makefiles, and when running a sub-make, the behavior can be pretty different
-depending on the 'makefile' that is tasked to run it.
+depending on the 'makefile' that is tasked to run it. For more, just search for "Recursive Make Considered Harmful"
+
+Third, most 'makefiles' do not create dependencies on the 'makefile' itself or the compiler flags that one used to generate a target.
+
+Redo addresses all of these points. 
+- Redo assumes that there will be multiple build scripts. These scripts are simple shell scripts.
+- Redo stores the 'uptodate' aspect of sources and targets in the filesystem with a checksum.
+- Redo records dependencies in a simple, well defined manner. It can even do this multiple times during a build script.
+- Redo automatically makes its version of a 'makefile' a prerequisite of the target it builds.
+- Redo is designed to properly handle multiple-processes running. It stores the state of the targets and sources in the 
+filesystem as it runs.
+
+## The Simplest Explanation
+
+The redo system can be based on multiple executables, but we will focus on one: redo-ifchange.
+
+As a user, you will only type the 'redo' command, but that is just shorthand for:
+
+redo
+  - erase 'modified','up to date' labels on all files
+  - run 'all.do'
+xx  - run 'redo-ifchange all'.
+  
+You can also say 'redo target1 target2' and that is just shorthand for 'redo-ifchange target1 target2'
+
+The command only takes arguments that specify filenames.
+
+redo-ifchange will do the following:
+  - have I seen this target? No - then fail
+  - do I have a dependency db for this target? No - then fail
+  - ok, go through each dependency to see if it is out of date:
+     - run 'redo-ifchange dependency1' etc. (Notice the recursion.)
+     - After each finishes, were they labeled 'modified'? Yes - Fail
+     - If none are out of date, then label this target 'up to date'
+  - If any of the above fail, it run's the targets '.do' script
+     - If a '.do' script runs, it recreates its own dependency db
+     - Compare the result of the '.do' script with the prior checksum
+     - If it does not match, then mark this target as 'modified'. (This will be the typical result)
+     - Otherwise, mark it 'up to date'
+     
+Essentially, on the first run, the system will build this database for every filename argument passed
+to 'redo-ifchange. Implementations typically keep the database in a '.redo' directory.
+
+On further runs, the system will check to see if a source was 'modified' (these are the only things that can be edited.) If it was, 
+it causes any target dependent on that source to be marked as 'modified', which causes any targets dependent on it to 
+run their '.do' scripts.
+
+xxx THIS IS difficult because of the recursive nature
+
+redo-ifchange will check each filename provided to see if it is labeled a source or a target. 
+
+A target must have a 'target.do' shell script. If it isn't a target, then it is a source file and must exist.
+
+After it does that determination, it records the label (typically in a .redo directory).
+
+xx The top level 'redo' command must only have targets. It will run the target's '.do'file.
+
+redo-ifchange will then handle sources and targets differently.
+
+For a source, it checks the mod-time and compares with the recorded mod-time. If they differ,
+it compares a checksum (MD5 or SHA) to compare with the recorded checksum.
+If both compares, fail the source is marked as 'updated'.
+
+For a target, looks at the dependencies it has recorded for the target.
+If these dependencies are missing (first run), or the target is missing, or at least one dependency is out of date,
+then the 'redo-ifchange' must fork and executes the targets 'do' file.
+
+If the target do file has 'redo-ifchange' commands inside of it, those recursive executions affect the inner targets.
+
+Ok, once redo-ifchange has finished processing all of its arguments, it recordes these as
+dependencies for the current '.do' file that this command is running in. It will also
+record the '
+
+
+it checks the mod-time and compares with the recorded mod-time. If they differ,
+it compares a checksum (MD5 or SHA) to compare with the recorded checksum.
+If both compares, fail the source is marked as 'updated'.
+
+
+## Nutshell
+
+Redo runs '.do' files on targets.
+On the first run, it will build its database about the project (checksums and dependencies).
+It is able to integrate new files and dependencies on every run.
+
+That is basic 'redo' in a nutshell.
+If you understand that, you understand the vast majority of redo.
+
+To take it a little further, there is more functionality. 'redo' has a system for using a 'default.do'.
+For example, if you said, redo-ifchange xyz.md, the 'do' file searched for would be 'xyz.md.do' then
+'default.md.do'. That way you can just have a single file (in this case converting MarkDown to HTML), to 
+handle a class of files. In order for these scripts to run, they take the target info as command
+line arguments. In fact, all '.do' files take these arguments.
+
+With this added functionality, a build system can be described with just a few 'do' files.
+
+
+
+A target must have a shell script with the same name and suffixed with '.do'. So, redo just runs 'all.do'.
+
+The shell script just compiles, or translates markdown to html, or copies files, or creates symbolic links, etc.
+
+However, if you put the command 'redo-ifchange target2 source1 etc.' into that 'all.do', then a lot more happens.
+
+'redo-ifchange' will recursively build the target2
+
+
+, but it really just runs redo-ifchange. We will focus on that one command.
+
+redo-ifchange is given arguments. 
+
+When you run 'redo all' or just 'redo', it will consider 'all' to be a target, a thing to build. In this case,
+the file 'all' will never exist, it is a pseudo target.
+Again, running 'redo' is nearly equivalent to running 'redo-ifchange all', so I'll swith to that.
+'redo-ifchange' will look to see if the target exists and if the recorded prerequisits for all exist.
+If this was the first run, neither of those would exist, so 'redo-ifchange' will run 'all.do'.
+All targets have a 'do' file, or shell script.
+The 'all.do' shell script will have commands to perform whatever is necessary to build the target.
+If there are no 'redo-ifchange' commands in the 'all.do' script, then no dependencies will get recorded. In that case,
+there really is no benefit to 'redo'. It will just re-run that 'all.do' script every time you type 'redo'.
+
+The benefit is received when one or more 'redo-ifchange' commands are in the script. This is the key to
+understanding redo.
+
+These 'redo-ifchange' commands in the 'all.do' will have arguments that describe files. These files
+are either targets or sources. To identify which is which, redo-ifchange can see if the argument has
+a 'do' file. If it does, then it is labeled a 'target'. Otherwise, it checkes if the file must exists, and
+if it does, it labels it a 'source'.
+
+Just like above, on the first run, the targets will not exist, but the sources will exist.
+
+If the argument is a source, 'redo-ifchange' will look to see if the file has a recorded modtime and checksum.
+If not, it records that.
+
+If the command line argument was a source, it already exists. This is intuitive.
+So, 'redo-ifchange' will fork and run the new target's 'do' file. If everything builds ok, the last thing
+'redo-ifchange' will do is record that: 
+- that target was not up to date
+- that target is a prerequisite of the parent target (in this case 'all')
+
+
 
 
 ## The Core of Redo
@@ -155,6 +295,8 @@ Besides the lack of good documentation, but interesting design, there are some s
 1. DJB avoids monolithic configuration files. DJB uses the filesystem as configuration.
 2. The number of commands is small and there roles are very well defined.
 3. No new language needs to be learned to use the software. All you need to know is the most basic Unix shell.
+4. The pattern matching of targets to their 'do' file or to their 'default.do' is similar to other matching 
+systems built by DJB.
 
 
 
