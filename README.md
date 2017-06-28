@@ -357,11 +357,16 @@ systems built by DJB.
 
 ## Problems with the Redo model
 
-- In the Grosskurth, model, if a file exists on first build (even an empty one), it will be considered a source. This is a pretty serious flaw in that implementation.
-- In the Grosskurth, model, if the primary target is removed after a successful run, it will not be rebuilt.. This is a pretty serious flaw in that implementation.
+- No standard for metadata storage. However, I believe the cli API could be standardized. So I think '.do' files could be standardized.
 
-- Cross compilation
-- It doesn't support a separate build directory
+- In the Grosskurth, implementation, if a file exists on first build (even an empty one), it will be considered a source. This is a bug.
+
+- In the Grosskurth implementation, if the primary target is removed after a successful run, it will not be rebuilt. Again, just a bug.
+
+- It doesn't support 'out-of'source' builds. This just means, putting all artifacts in a separate build directory. See http://voices.canonical.com/jussi.pakkanen/2013/04/16/why-you-should-consider-using-separate-build-directories/
+
+- Cross compilation is not a concept, so it would require work to support this. It would be easier if the system supported 'out-of-source' builds.
+
 - A target can only be one file. Some people mentioned this, but this might not be a valid problem restriction.
 
 ## Unanswered Questions
