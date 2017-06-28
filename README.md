@@ -72,6 +72,10 @@ line arguments. In fact, all '.do' files take these arguments.
 
 With this added functionality, a build system can be described with just a few 'do' files.
 
+## Another Attempt - Higher Level
+
+Redo is a system that......... (insert high-level here)
+
 ## Examples
 
 Ok, a few examples.
@@ -116,12 +120,17 @@ filesystem as it runs. Make can only reason about its data structure in a single
 
 - Redo automatically labels files as targets or sources. This was not explained well, or I didn't catch this insight from other sites describing redo. Not having that step was confusing for me. None of the writeups explained that crucial step. Especially since there isn't explicit syntax for this. The system works with any source or target specified to redo-ifchange. However, at the top level, it makes no sense to specify a source. Make is very explicit about this.
 
+- Design decisions like this are a very DJB style. He tends to simplify, generalize, or unify parts of the system so they are simple. The net result is a design that feels very different even though they are nearly the same.
+
+- Redo stores its database in the filesystem vs. in-memory. With Make, it builds the dependency graph and then just walks that. In Redo, that is an on-disk structure that the redo-ifchange commands coordinate with. It is a minor point, but I was scratching my head about this as it wasn't explicityly stated. I was used the to the 'make' style. In fact, in general, most detailed descriptions of redo tend to just say there is a database. I would prefer the ole Fred Brooks, "show me your tables" approach.
+
 - If you don't understand the magic of 'redo-ifchange', it is hard to have intuition about the system. Make does not have this problem as it is a Domain Specific Language (DSL). You can read the rules outloud to infer the steps it will take.
 
-Example: I saw 'redo-ifchange example.exe'. Ok it is going to run example.exe.do. Once the file is built, how does it know that example.exe is up to date? For a while, I was wondering if there was some side-effect from running redo-ifchange that caused the bash script to exit prematurely in a '.do' script'. Clearly laying out the algorithm, then allows you to read and infer the behavior.
+Example: I saw 'redo-ifchange example.exe'. Ok it is going to run example.exe.do. Once the file is built, how does it know that example.exe is up to date? For a while, I was wondering if there was some side-effect from running redo-ifchange that caused the bash script to exit prematurely in a '.do' script'. If one of the Redo documents succinctly and clearly layed out the algorithm and database, 
+it would allow you to read and infer the behavior.
 
-- Redo stores its database in the filesystem vs. in-memory. With Make, it builds the dependency graph and then just walks that. In Redo, that is an on-disk structure that the redo-ifchange commands coordinate with. It is a minor point, but I was scratching my head about this as it wasn't explicityly stated. In fact, in general, most detailed descriptions of redo tend to just say there is a database. I would prefer the ole Fred Brooks, "show me your tables" approach.
-- Make is explicit about target and prerequisit relationships. However, it has a lot of automagic rules for compiling various languages. Redo has nothing built-in.
+
+- Make is explicit about target and prerequisit relationships. However, it has a lot of automagic rules for compiling various languages. Redo has nothing built-in, which is a good thing.
 
 
 ## WIP / IGNORE
@@ -336,8 +345,8 @@ Besides the lack of good documentation, but interesting design, there are some s
 3. No new language needs to be learned to use the software. All you need to know is the most basic Unix shell.
 4. The pattern matching of targets to their 'do' file or to their 'default.do' is similar to other matching 
 systems built by DJB.
-5. DJB tends to simplify things to such a degree, that it may feel very foreign to someone with experience with other systems.
-6. Crucial insights are not understood via the documentation. For example, you may puzzle over how or why something is the way it is. It is usually only later that you discover the insight.
+5. DJB tends to simplify things to such a high degree. It may feel very foreign to someone with experience with other systems. In many DJB systems, he tends to eliminate systems or unnecessary features in order to make the system more general.
+6. Related to above. Crucial design insights are not understood via the documentation. For example, you may puzzle over how or why something is the way it is. It is usually only later that you discover the insight.
 
 
 
