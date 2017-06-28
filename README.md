@@ -8,12 +8,19 @@ A document that concisely describes the Redo build system
 
 "But aren't there already many descriptions?"
 
-Yes, there are. Unfortunately, they tend to immediately go into examples and then gloss over or not even cover some functionality. This is my analysis of the Alan Grosskurth bash scripts.
+Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings.
+
+This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation.
+
+## In Contrast to Make
+
+If you have experience with 'make', then this will provide an interesting contrast.
 
 ## The Core of Redo
 
-The redo system is based on three commands: redo, redo-ifchange, redo-ifcreate.
+The redo system is based on three executables: redo, redo-ifchange, redo-ifcreate.
 Typically, you as a user will only use the 'redo' command.
+The 'redo' command is really a slightly special version of redo-ifchange. (In fact, some implementations just exec redo-ifchange)
 The files that will be considered are either sources or targets.
 The files that describe actions to take in order to build a 'target' are called 'do' files. 
 The 'do' files are typically shell scripts.
@@ -117,10 +124,29 @@ Instead of using environment variables, those variables should be persisted into
 - Essentially only the source dependencies are checked against their checksum.
 - If any of those change, that causes the targets to actually run a 'do' file.
 
+## The DJB Style
+
+I had a lot of experience with DJB software in my past. I found the software to be really well designed, once you understood the system.
+Like many open source packages in the old days, if you didn't have an O'Reilly manual, you had a tough slog before you 
+'understood the system'. This dive into Redo was no different. This is why I made the effort here.
+
+Besides the lack of good documentation, but interesting design, there are some similarities with other DJB systems.
+
+1. DJB avoids monolithic configuration files. DJB uses the filesystem as configuration.
+2. The number of commands is small and there roles are very well defined.
+3. No new language needs to be learned to use the software. All you need to know is the most basic Unix shell.
+
+
+
+
+
+
+
 
 ## Problems with the Redo model
 
-- In the Grosskurth, model, if a file exists on first build (even an empty one), it will be considered a source. This is a pretty serious flaw.
+- In the Grosskurth, model, if a file exists on first build (even an empty one), it will be considered a source. This is a pretty serious flaw in that implementation.
+- In the Grosskurth, model, if the primary target is removed after a successful run, it will not be rebuilt.. This is a pretty serious flaw in that implementation.
 
 - Cross compilation
 - It doesn't support a separate build directory
