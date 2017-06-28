@@ -41,34 +41,38 @@ Redo addresses all of these points.
 - Redo automatically makes its version of a 'makefile' a prerequisite of the target it builds.
 - Redo is designed to properly handle multiple-processes running. It stores the state of the targets and sources in the 
 filesystem as it runs.
+- The core concept is just a few commands, so it is not uncommon to have Redo implemented as a few shell scripts.
 
 ## The Simplest Explanation
 
 The redo system can be based on multiple executables, but we will focus on one: redo-ifchange.
 
-As a user, you will only type the 'redo' command, but that is just shorthand for:
+As a user, you will only type the 'redo' command, but that is just shorthand for 'redo-ifchange all'.
+You can also say 'redo target1 target2' and that is just shorthand for 'redo-ifchange target1 target2'
 
 redo
   - erase 'modified','up to date' labels on all files
-  - run 'all.do'
-xx  - run 'redo-ifchange all'.
+  - run 'redo-ifchange all'.
   
-You can also say 'redo target1 target2' and that is just shorthand for 'redo-ifchange target1 target2'
-
-The command only takes arguments that specify filenames.
+The command only takes arguments that specify filenames that will be labeled sources or targets.
 
 redo-ifchange will do the following:
-  - have I seen this target? No - then fail
-  - do I have a dependency db for this target? No - then fail
-  - ok, go through each dependency to see if it is out of date:
-     - run 'redo-ifchange dependency1' etc. (Notice the recursion.)
-     - After each finishes, were they labeled 'modified'? Yes - Fail
-     - If none are out of date, then label this target 'up to date'
-  - If any of the above fail, it run's the targets '.do' script
-     - If a '.do' script runs, it recreates its own dependency db
-     - Compare the result of the '.do' script with the prior checksum
-     - If it does not match, then mark this target as 'modified'. (This will be the typical result)
-     - Otherwise, mark it 'up to date'
+  - This a source:
+    - have I seen this source?
+      - No - then mark as 'modified'
+      - Yes - mark as 'up to date'
+  - This is a target:
+    - have I seen this target? No - then fail
+    - do I have a dependency db for this target? No - then fail
+    - ok, go through each dependency to see if it is out of date:
+       - run 'redo-ifchange dependency1' etc. (Notice the recursion.)
+       - After each finishes, were they labeled 'modified'? Yes - Fail
+       - If none are out of date, then label this target 'up to date'
+    - If any of the above fail, it run's the targets '.do' script
+       - If a '.do' script runs, it recreates its own dependency db
+       - Compare the result of the '.do' script with the prior checksum
+       - If it does not match, then mark this target as 'modified'. (This will be the typical result)
+       - Otherwise, mark it 'up to date'
      
 Essentially, on the first run, the system will build this database for every filename argument passed
 to 'redo-ifchange. Implementations typically keep the database in a '.redo' directory.
@@ -76,6 +80,9 @@ to 'redo-ifchange. Implementations typically keep the database in a '.redo' dire
 On further runs, the system will check to see if a source was 'modified' (these are the only things that can be edited.) If it was, 
 it causes any target dependent on that source to be marked as 'modified', which causes any targets dependent on it to 
 run their '.do' scripts.
+
+
+
 
 xxx THIS IS difficult because of the recursive nature
 
