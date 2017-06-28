@@ -114,7 +114,12 @@ filesystem as it runs. Make can only reason about its data structure in a single
 
 ## Why Redo Feels Different than Make
 
-- Redo automatically labels files as targets or sources. This was not explained well, or I didn't catch this insight from other sites describing redo. Not having that step was confusing for me. None of the writeups explained that crucial step. Especially since there isn't explicit syntax for this. The system works with any source or target specified to redo-ifchange. However, at the top level, it makes no sense to specify a source. Make is very explicit about this. Redo is focused on the 
+- Redo automatically labels files as targets or sources. This was not explained well, or I didn't catch this insight from other sites describing redo. Not having that step was confusing for me. None of the writeups explained that crucial step. Especially since there isn't explicit syntax for this. The system works with any source or target specified to redo-ifchange. However, at the top level, it makes no sense to specify a source. Make is very explicit about this.
+
+- If you don't understand the magic of 'redo-ifchange', it is hard to have intuition about the system. Make does not have this problem as it is a Domain Specific Language (DSL). You can read the rules outloud to infer the steps it will take.
+
+Example: I saw 'redo-ifchange example.exe'. Ok it is going to run example.exe.do. Once the file is built, how does it know that example.exe is up to date? For a while, I was wondering if there was some side-effect from running redo-ifchange that caused the bash script to exit prematurely in a '.do' script'. Clearly laying out the algorithm, then allows you to read and infer the behavior.
+
 - Redo stores its database in the filesystem vs. in-memory. With Make, it builds the dependency graph and then just walks that. In Redo, that is an on-disk structure that the redo-ifchange commands coordinate with. It is a minor point, but I was scratching my head about this as it wasn't explicityly stated. In fact, in general, most detailed descriptions of redo tend to just say there is a database. I would prefer the ole Fred Brooks, "show me your tables" approach.
 - Make is explicit about target and prerequisit relationships. However, it has a lot of automagic rules for compiling various languages. Redo has nothing built-in.
 
