@@ -45,16 +45,23 @@ filesystem as it runs.
 
 ## The Simplest Explanation
 
-The redo system can be based on multiple executables, but we will focus on one: redo-ifchange.
+The redo system can be based on multiple executables, but we will focus on the only one that matters: redo-ifchange.
 
-As a user, you will only type the 'redo' command, but that is just shorthand for 'redo-ifchange all'.
-You can also say 'redo target1 target2' and that is just shorthand for 'redo-ifchange target1 target2'
+The filenames specified to redo should either be sources (existing files), or targets (files that are built or generated).
+
+As a user, you will only type the 'redo' command, but that is nearly shorthand for 'redo-ifchange all'.
+You can also say 'redo target1 target2' and that is just shorthand for 'redo-ifchange target1 target2'.
+These arguments should only be targets.
 
 redo
-  - erase 'modified','up to date' labels on all files
-  - run 'redo-ifchange all'.
+  - erase 'modified','up to date' labels on all files in database
+  - run 'redo-ifchange all'
   
-The command only takes arguments that specify filenames that will be labeled sources or targets.
+redo target1
+  - erase 'modified','up to date' labels on all files in database
+  - run 'redo-ifchange target1'
+  
+The redo-ifchange command only takes arguments that specify filenames that will be labeled sources or targets.
 
 redo-ifchange will do with each argument:
   - This a source: (no '.do' file, file exists)
@@ -65,8 +72,8 @@ redo-ifchange will do with each argument:
     - have I seen this target? No - then goto build
     - does the target file exist? No - then goto build
     - do I have a dependency db for this target? No - then goto build
-    - ok, go through each dependency to see if it is out of date:
-       - run 'redo-ifchange dependency1' etc. (Notice the recursion.)
+    - ok, go through each dependency in db for this target to see if it is out of date:
+       - run 'redo-ifchange dependency' etc. (Notice the recursion.)
        - After each finishes, were they labeled 'modified'? Yes - goto build
        - If none are out of date, then label this target 'up to date'
     - Build: If any of the above fail, fork and run the target's '.do' script
@@ -76,7 +83,6 @@ redo-ifchange will do with each argument:
        - If it does not match, then mark this target as 'modified'. (This will be the typical result)
        - Otherwise, mark it 'up to date'
   - Add the argument to the dependency db for the '.do' script we are running in
-  
   - If all of the above were 'up to date', mark this target as 'up to date', otherwise 'modified'
      
 Essentially, on the first run, the system will build this database for every filename argument passed
@@ -86,8 +92,22 @@ On further runs, the system will check to see if a source was 'modified' (these 
 it causes any target dependent on that source to be marked as 'modified', which causes any targets dependent on it to 
 run their '.do' scripts.
 
+That is basic 'redo' in a nutshell.
+If you understand that, you understand the vast majority of redo.
+
+To take it a little further, there is more functionality. 'redo' has a system for using a 'default.do'.
+For example, if you said, redo-ifchange xyz.md, the 'do' file searched for would be 'xyz.md.do' then
+'default.md.do'. That way you can just have a single file (in this case converting MarkDown to HTML), to 
+handle a class of files. In order for these scripts to run, they take the target info as command
+line arguments. In fact, all '.do' files take these arguments.
+
+With this added functionality, a build system can be described with just a few 'do' files.
+
+## Examples
 
 
+
+## WIP / IGNORE
 
 xxx THIS IS difficult because of the recursive nature
 
@@ -127,16 +147,6 @@ Redo runs '.do' files on targets.
 On the first run, it will build its database about the project (checksums and dependencies).
 It is able to integrate new files and dependencies on every run.
 
-That is basic 'redo' in a nutshell.
-If you understand that, you understand the vast majority of redo.
-
-To take it a little further, there is more functionality. 'redo' has a system for using a 'default.do'.
-For example, if you said, redo-ifchange xyz.md, the 'do' file searched for would be 'xyz.md.do' then
-'default.md.do'. That way you can just have a single file (in this case converting MarkDown to HTML), to 
-handle a class of files. In order for these scripts to run, they take the target info as command
-line arguments. In fact, all '.do' files take these arguments.
-
-With this added functionality, a build system can be described with just a few 'do' files.
 
 
 
