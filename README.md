@@ -4,13 +4,15 @@ A document that concisely describes the Redo build system. It is not complete, s
 
 ## Introduction
 
-**Redo** is an alternative to the common **make** system for building files. This document is an attempt to concisely and correctly capture the concept. 
+**Redo** is an alternative to the common **make** system for building files. This document is an attempt to concisely and correctly capture the concept of redo.
 
 "But aren't there already many descriptions?"
 
 Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings. The result is just a focus on the simplicity, but avoiding to explain the magic.
 
-This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simmple.
+This document will show that 'redo' is simple and illuminate the inner workings appropriately.
+
+This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simple.
 
 ## The Simplest Explanation
 
