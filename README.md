@@ -14,7 +14,7 @@ This document will show that 'redo' is simple and illuminate the inner workings 
 
 This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simple.
 
-## The Simplest Explanation
+## The Simplest Explanation to a Developer
 
 The redo system can be based on multiple executables, but we will focus on the only one that matters: redo-ifchange.
 
