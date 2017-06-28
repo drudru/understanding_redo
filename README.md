@@ -1,6 +1,6 @@
 # Understanding Redo
 
-A document that concisely describes the Redo build system
+A document that concisely describes the Redo build system. It is not complete, so look at the resources linked at the bottom instead.
 
 ## Introduction
 
