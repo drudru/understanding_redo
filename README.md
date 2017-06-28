@@ -10,9 +10,9 @@ A document that concisely describes the Redo build system. It is not complete, s
 
 Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings. The result is just a focus on the simplicity, but avoiding to explain the magic.
 
-This document will show that 'redo' is simple and illuminate the inner workings appropriately.
+This document will demonstrate that 'redo' is simple **and** illuminate the inner workings at the same time.
 
-This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simple.
+This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation.
 
 ## The Simplest Explanation to a Developer
 
