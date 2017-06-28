@@ -16,7 +16,8 @@ This is my analysis of the Alan Grosskurth bash scripts, which were the first pu
 
 ## The Simplest Explanation to a Developer
 
-The redo system can be based on multiple executables, but we will focus on the only one that matters: redo-ifchange.
+The redo system can be based on multiple executables, but we will focus on the only the two that matter: redo and redo-ifchange.
+Of those two, redo-ifchange is the most important since 'redo' basically runs it.
 
 The filenames specified to redo should either be sources (existing files), or targets (files that are built or generated).
 
@@ -77,6 +78,10 @@ With this added functionality, a build system can be described with just a few '
 ## Another Attempt - Higher Level
 
 Redo is a system that......... (insert high-level here)
+
+## The Simplest Explanation to a Shell Scripter
+
+
 
 ## Examples
 
