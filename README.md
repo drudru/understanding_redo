@@ -14,7 +14,24 @@ This is my analysis of the Alan Grosskurth bash scripts, which were the first pu
 
 ## In Contrast to Make
 
-If you have experience with 'make', then this will provide an interesting contrast.
+If you have experience with 'make', then this will provide an interesting contrast. If you don't, then just skip this section.
+
+Make serves a unique purpose. It is the only system that is used for managing dependencies in a general way.
+
+In order to use make, you create a 'Makefile' in a directory to provide the 'rules'. The rules connect 'build targets' (or just 'targets') with their 'prerequisites'. If any 'prerequisite' is out of date or the 'target' is missing, then the 'action' for that rule is taken.
+(In order to make things a little more succinct, we will call these: targets, sources, and actions.)
+
+For a simple project, all of this is pretty easy. However, as you work with a larger project, things start to become more difficult.
+
+First, the 'make' documentation is not explicit about the following: everybody usually specifies the **minimal** set of prerequisits.
+If you run into a situation where one of the prerequsits of a prerequisit changes, then 'make' will not detect this. For most tasks, this
+is ok. (More on this)
+
+Most C or C++ projects end up getting the compiler to generate a list of dependencies for any *.c, *.cpp that is compiled. Those dependencies may not be in a format that is compatible with make.
+
+Second, as you integrate other libraries or code-bases into your project's build, you will want to just utilize that other projects 'makefile'. However, there are many conventions for makefiles, and when running a sub-make, the behavior can be pretty different
+depending on the 'makefile' that is tasked to run it.
+
 
 ## The Core of Redo
 
@@ -27,6 +44,9 @@ The 'do' files are typically shell scripts.
 If a 'do' file is executed, the target is built and the resulting output is atomically put in the filesytem.
 The 'redo-ifchange' or 'redo-ifcreate' are used in the 'do' shell scripts.
 Dependency and other data is recorded in each directory with the name '.redo'.
+When a 'do' script is run, the goal is to mention dependencies with 'redo-ifcreate', and then perform whatever
+action is required in order to create the target.
+'redo-ifcreate' is the key piece and will be described in more detail in the following section.
 
 ### redo
 
