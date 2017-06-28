@@ -56,23 +56,28 @@ redo
   
 The command only takes arguments that specify filenames that will be labeled sources or targets.
 
-redo-ifchange will do the following:
-  - This a source:
-    - have I seen this source?
+redo-ifchange will do with each argument:
+  - This a source: (no '.do' file, file exists)
+    - have I seen this source? Do checksums match?
       - No - then mark as 'modified'
       - Yes - mark as 'up to date'
-  - This is a target:
-    - have I seen this target? No - then fail
-    - do I have a dependency db for this target? No - then fail
+  - This is a target: (has a .do file)
+    - have I seen this target? No - then goto build
+    - does the target file exist? No - then goto build
+    - do I have a dependency db for this target? No - then goto build
     - ok, go through each dependency to see if it is out of date:
        - run 'redo-ifchange dependency1' etc. (Notice the recursion.)
-       - After each finishes, were they labeled 'modified'? Yes - Fail
+       - After each finishes, were they labeled 'modified'? Yes - goto build
        - If none are out of date, then label this target 'up to date'
-    - If any of the above fail, it run's the targets '.do' script
-       - If a '.do' script runs, it recreates its own dependency db
+    - Build: If any of the above fail, fork and run the target's '.do' script
+       - If a '.do' script runs, it recreates the dependency db for this target
+         - The '.do' script is the first dependency in that db
        - Compare the result of the '.do' script with the prior checksum
        - If it does not match, then mark this target as 'modified'. (This will be the typical result)
        - Otherwise, mark it 'up to date'
+  - Add the argument to the dependency db for the '.do' script we are running in
+  
+  - If all of the above were 'up to date', mark this target as 'up to date', otherwise 'modified'
      
 Essentially, on the first run, the system will build this database for every filename argument passed
 to 'redo-ifchange. Implementations typically keep the database in a '.redo' directory.
