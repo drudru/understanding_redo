@@ -8,40 +8,9 @@ A document that concisely describes the Redo build system. It is not complete, s
 
 "But aren't there already many descriptions?"
 
-Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings.
+Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings. The result is just a focus on the simplicity, but avoiding to explain the magic.
 
 This is my analysis of the Alan Grosskurth bash scripts, which were the first public implementation. Redo is simmple.
-
-## In Contrast to Make
-
-If you have experience with 'make', then this will provide an interesting contrast. If you don't, then just skip this section.
-
-Make serves a unique purpose. It is the only system that is used for managing dependencies in a general way.
-
-In order to use make, you create a 'Makefile' in a directory to provide the 'rules'. The rules connect 'build targets' (or just 'targets') with their 'prerequisites'. If any 'prerequisite' is out of date or the 'target' is missing, then the 'action' for that rule is taken.
-(In order to make things a little more succinct, we will call these: targets, sources, and actions.)
-
-For a simple project, all of this is pretty easy. However, as you work with a larger project, things start to become more difficult.
-
-First, the 'make' documentation is not explicit about the following: everybody usually specifies the **minimal** set of prerequisits.
-If you run into a situation where one of the prerequsits of a prerequisit changes, then 'make' will not detect this. For most tasks, this
-is ok. (More on this)
-
-Most C or C++ projects end up getting the compiler to generate a list of dependencies for any *.c, *.cpp that is compiled. Those dependencies may not be in a format that is compatible with make. Also, what if your make is running in parallel? Orchestrating dependency files in an environment like that is tricky.
-
-Second, as you integrate other libraries or code-bases into your project's build, you will want to just utilize that other projects 'makefile'. However, there are many conventions for makefiles, and when running a sub-make, the behavior can be pretty different
-depending on the 'makefile' that is tasked to run it. For more, just search for "Recursive Make Considered Harmful"
-
-Third, most 'makefiles' do not create dependencies on the 'makefile' itself or the compiler flags that one used to generate a target.
-
-Redo addresses all of these points. 
-- Redo assumes that there will be multiple build scripts. These scripts are simple shell scripts.
-- Redo stores the 'uptodate' aspect of sources and targets in the filesystem with a checksum.
-- Redo records dependencies in a simple, well defined manner. It can even do this multiple times during a build script.
-- Redo automatically makes its version of a 'makefile' a prerequisite of the target it builds.
-- Redo is designed to properly handle multiple-processes running. It stores the state of the targets and sources in the 
-filesystem as it runs.
-- The core concept is just a few commands, so it is not uncommon to have Redo implemented as a few shell scripts.
 
 ## The Simplest Explanation
 
@@ -105,6 +74,49 @@ With this added functionality, a build system can be described with just a few '
 
 ## Examples
 
+Ok, a few examples.
+
+## In Contrast to Make
+
+If you have experience with 'make', then this will provide an interesting contrast. If you don't, then just skip this section.
+
+Make serves a unique purpose. It is the only system that is used for managing dependencies in a general way.
+
+In order to use make, you create a 'Makefile' in a directory to provide the 'rules'. The rules connect 'build targets' (or just 'targets') with their 'prerequisites'. If any 'prerequisite' is out of date or the 'target' is missing, then the 'action' for that rule is taken.
+(In order to make things a little more succinct, we will call these: targets, sources, and actions.)
+
+For a simple project, all of this is pretty easy. However, as you work with a larger project, things start to become more difficult.
+
+First, the 'make' documentation is not explicit about the following: everybody usually specifies the **minimal** set of prerequisits.
+If you run into a situation where one of the prerequsits of a prerequisit changes, then 'make' will not detect this. For most tasks, this
+is ok. (More on this)
+
+Most C or C++ projects end up getting the compiler to generate a list of dependencies for any *.c, *.cpp that is compiled. Those dependencies may not be in a format that is compatible with make. Also, what if your make is running in parallel? Orchestrating dependency files in an environment like that is tricky.
+
+Second, as you integrate other libraries or code-bases into your project's build, you will want to just utilize that other projects 'makefile'. However, there are many conventions for makefiles, and when running a sub-make, the behavior can be pretty different
+depending on the 'makefile' that is tasked to run it. For more, just search for "Recursive Make Considered Harmful"
+
+Third, most 'makefiles' do not create dependencies on the 'makefile' itself or the compiler flags that one used to generate a target.
+
+Fourth, most 'make' systems have defaults for compiling files. These default rulesets are not really useful in the modern era. Most 'makefiles' that I have seen end up having flags or setting that would conflict with those from a package or library.
+
+Redo addresses all of these points. 
+- Redo assumes that there will be multiple build scripts.
+- These scripts are simple shell scripts. No new language.
+- Redo does not bake in any defaults on how to compile a C file, etc. Which is fine since everybody ends up having 
+  to provide their own actions over the default rules anyways.
+- Redo stores the 'uptodate' aspect of sources and targets in the filesystem with a checksum.
+- Redo records dependencies in a simple, well defined manner. It can even do this multiple times during a build script.
+- Redo automatically makes its version of a 'makefile' a prerequisite of the target it builds.
+- Redo is designed to properly handle multiple-processes running. It stores the state of the targets and sources in the 
+filesystem as it runs. Make can only reason about its data structure in a single process.
+- The core concept is just a few commands, so it is not uncommon to have Redo implemented as a few shell scripts.
+
+## Why Redo Feels Different than Make
+
+- Redo automatically labels files as targets or sources. This was not explained well, or I didn't catch this insight from other sites describing redo. Not having that step was confusing for me. None of the writeups explained that crucial step. Especially since there isn't explicit syntax for this. The system works with any source or target specified to redo-ifchange. However, at the top level, it makes no sense to specify a source. Make is very explicit about this. Redo is focused on the 
+- Redo stores its database in the filesystem vs. in-memory. With Make, it builds the dependency graph and then just walks that. In Redo, that is an on-disk structure that the redo-ifchange commands coordinate with. It is a minor point, but I was scratching my head about this as it wasn't explicityly stated. In fact, in general, most detailed descriptions of redo tend to just say there is a database. I would prefer the ole Fred Brooks, "show me your tables" approach.
+- Make is explicit about target and prerequisit relationships. However, it has a lot of automagic rules for compiling various languages. Redo has nothing built-in.
 
 
 ## WIP / IGNORE
@@ -319,6 +331,8 @@ Besides the lack of good documentation, but interesting design, there are some s
 3. No new language needs to be learned to use the software. All you need to know is the most basic Unix shell.
 4. The pattern matching of targets to their 'do' file or to their 'default.do' is similar to other matching 
 systems built by DJB.
+5. DJB tends to simplify things to such a degree, that it may feel very foreign to someone with experience with other systems.
+6. Crucial insights are not understood via the documentation. For example, you may puzzle over how or why something is the way it is. It is usually only later that you discover the insight.
 
 
 
