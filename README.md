@@ -389,3 +389,8 @@ systems built by DJB.
 - Jonathan de Boyne Pollard -  http://jdebp.eu./FGA/introduction-to-redo.html
 - Sean Bowman on Redo - http://seanbowman.me/blog/tags/redo/
 
+## Links to other relevant sources
+
+- Recursive Make Considered Harmful - http://aegis.sourceforge.net/auug97.pdf
+- Non Recursive Make Considered Harmful - https://www.microsoft.com/en-us/research/wp-content/uploads/2016/03/hadrian.pdf
+
