@@ -2,6 +2,10 @@
 
 A document that concisely describes the Redo build system. It is not complete, so look at the resources linked at the bottom instead.
 
+**2018-11-20** - going with a new tactic.
+
+Show me your flowcharts and conceal your tables, and I shall continue to be mystified. Show me your tables, and I won’t usually need your flowcharts; they’ll be obvious.  Fred Brooks, 'The Mythical Man Month'
+
 ## Introduction
 
 **Redo** is an alternative to the common **make** system for building files. This document is an attempt to concisely and correctly capture the concept of redo.
