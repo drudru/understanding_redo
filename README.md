@@ -20,7 +20,7 @@ This is my analysis of the Alan Grosskurth bash scripts, which were the first pu
 
 ## The Simplest Explanation to a Developer
 
-The redo system can be based on multiple executables, but we will focus on the only the two that matter: redo and redo-ifchange.
+The redo system can be based on many executables, but we will only focus on the two that matter: redo and redo-ifchange.
 Of those two, redo-ifchange is the most important since 'redo' basically runs it.
 
 The filenames specified to redo should either be sources (existing files), or targets (files that are built or generated).
