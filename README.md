@@ -12,7 +12,7 @@ Show me your flowcharts and conceal your tables, and I shall continue to be myst
 
 "But aren't there already many descriptions?"
 
-Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings. The result is just a focus on the simplicity, but avoiding to explain the magic.
+Yes, there are a few. Unfortunately, they tend to immediately go into examples and then gloss over the inner workings. The result is just a focus on the magic, without demystifying the magic.
 
 This document will demonstrate that 'redo' is simple **and** illuminate the inner workings at the same time.
 
