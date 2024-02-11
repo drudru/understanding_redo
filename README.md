@@ -1,3 +1,6 @@
+# (THIS IS A Work In Progress. Please ignore and read other descriptions online)
+
+
 # Understanding Redo
 
 A document that concisely describes the Redo build system. It is not complete, so look at the resources linked at the bottom instead.
